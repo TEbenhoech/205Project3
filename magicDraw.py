@@ -18,6 +18,7 @@
 import cv2
 import numpy as np
 import math
+#this is a comment
 
 video = cv2.VideoCapture(0)
 ##Code based off code from opencv doc: http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_gui/py_mouse_handling/py_mouse_handling.html
