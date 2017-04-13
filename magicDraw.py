@@ -1,29 +1,14 @@
-"""
-##############################################################################
-## Title: videoDraw.py
-##    Abstract: Draw using your hand! using openCV with an XML to recognize the fist
-##        you can draw to screen using your hand. use the interface on the sides to change settings
-##        using your hand!
-##    Note: background is important. busy backgrounds or not enough light can result in poor
-##        hand recognition. Face will also sometimes be recognized, so remember to stay out of frame
-##    date:3.16.2017
-##    by: Team 240
-##    Contributors: 
-##        Harlan Cheer
-##        Theo Ebenhoech
-##        Gabe Gaerlan
-##        Samuel Valdez 
-##############################################################################
-"""
 import cv2
 import numpy as np
 import math
 
 video = cv2.VideoCapture(0)
+video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+video.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 ##Code based off code from opencv doc: http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_gui/py_mouse_handling/py_mouse_handling.html
 ret, frame = video.read()
 hand_cascade = cv2.CascadeClassifier('fist.xml')
-height, width = frame.shape[:2]
+height, width, channels = frame.shape
 drawing = False # true if mouse is pressed
 mode = False # if True, draw rectangle. Press 'm' to toggle to curve
 ix,iy = -1,-1
@@ -56,9 +41,7 @@ def draw_circle(event,x,y,flags,param):#commands you can use with keyboard testi
             
             
 img = np.zeros((height,width,3), np.uint8)
-cv2.namedWindow('HandDraw')
-cv2.setMouseCallback('HandDraw',draw_circle)
-ui = cv2.imread("UI.png")# reads and sets user interface to ui
+#ui = cv2.imread("UI.png")# reads and sets user interface to ui
 
 while(1):#while this is true run!
    
@@ -198,9 +181,15 @@ while(1):#while this is true run!
     elif k == 27 or k == ord('q'):#press esc or q to exit
         break
     
-    frame = cv2.add(frame,ui)#combines frame with ui 
-    both = cv2.add(frame, img)#combines everything together 
-    
+    #frame = cv2.add(frame,ui)#combines frame with ui 
+    #both = cv2.addWeighted(frame,img)#combines everything together
+    img2gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    ret, mask = cv2.threshold(img2gray, 10, 255, cv2.THRESH_BINARY)
+    mask_inv = cv2.bitwise_not(mask)
+    mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+    mask_inv = cv2.cvtColor(mask_inv, cv2.COLOR_GRAY2BGR)
+    cv2.imshow('test', mask)
+    both = frame*mask + mask_inv*img
 
     both = cv2.flip(both, 1)#inverts the webcam screen
     cv2.imshow('image',both)#shows us our webcam with everything implemented, ui, hand detection and canvas
