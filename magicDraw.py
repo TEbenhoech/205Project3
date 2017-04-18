@@ -189,8 +189,7 @@ while(1):#while this is true run!
     mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
     mask_inv = cv2.cvtColor(mask_inv, cv2.COLOR_GRAY2BGR)
     cv2.imshow('test', mask)
-    both = frame*mask + mask_inv*img
-
+    both = frame * (mask_inv / 255) + img * (mask / 255);
     both = cv2.flip(both, 1)#inverts the webcam screen
     cv2.imshow('image',both)#shows us our webcam with everything implemented, ui, hand detection and canvas
 
