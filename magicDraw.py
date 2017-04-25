@@ -16,6 +16,12 @@ brushSize = 10 #default size 10 brush
 b = 0
 g = 0
 r = 200 #default to red brush
+instrument = 0
+#instruments, piano:0, 
+notes = [[],[]]
+#2d array of notes, first array is instrument, second is coordinates
+#One set up coordinates takes up two places, first is x, second y
+#ex the array [5,7,3,4] represents two points, the first at (5,7) and the second at (3,4)
 
 # mouse callback function
 def draw_circle(event,x,y,flags,param):#commands you can use with keyboard testing only
@@ -132,6 +138,9 @@ while(1):#while this is true run!
         brushSize = 20
     
     cv2.circle(img,(posX,posY),brushSize,(b,g,r),-1)#this calls our brush &draws it on screen using the cv2.circlefunction
+    if(posX != 0 or posY != 0):
+        notes[instrument].extend([posX,posY])
+    print(notes)
     #cv2.imshow('image',img)
     k = cv2.waitKey(1) & 0xFF 
     if(eraseFlag == False):#this use to clear the whole screen but got replaces with a brush set to 0 , 0 , 0 
