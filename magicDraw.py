@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import math
-#this is a comment
 
 video = cv2.VideoCapture(0)
 video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -17,6 +16,12 @@ brushSize = 10 #default size 10 brush
 b = 0
 g = 0
 r = 200 #default to red brush
+instrument = 0
+#instruments, piano:0, 
+notes = [[],[]]
+#2d array of notes, first array is instrument, second is coordinates
+#One set up coordinates takes up two places, first is x, second y
+#ex the array [5,7,3,4] represents two points, the first at (5,7) and the second at (3,4)
 
 # mouse callback function
 def draw_circle(event,x,y,flags,param):#commands you can use with keyboard testing only
@@ -64,7 +69,34 @@ while(1):#while this is true run!
         cv2.rectangle(frame,(x,y),(x+w, y+h),(b,g,r),2)
         posX = x+(w/2)
         posY = y+(h/2)
-    
+
+    #Color detection
+    if posX < width * .1:
+        if posY < height * .9:#Purple
+            g = 0
+            r = 200
+            b = 255
+        if posY < height * .75:#Blue
+            g = 0
+            r = 0
+            b = 200
+        if posY < height * .6:#Green
+            g = 200
+            r = 0
+            b = 0
+        if posY < height * .45:#Yellow
+            g = 255
+            r = 255
+            b = 0
+        if posY < height * .3:#Orange
+            g = 100
+            r = 255
+            b = 0 
+        if posY < height * .15:#Red
+            g = 0
+            r = 200
+            b = 0
+          
     eraser = (600,220, 0)#eraser detection 
     collisionX = posX - eraser[0]
     collisionY = posY - eraser[1]
@@ -105,68 +137,10 @@ while(1):#while this is true run!
     if bigCollision < 35:
         brushSize = 20
     
-    red = (35,40,0) #red detection 
-    redX = posX - red[0]#grabs x value
-    redY = posY - red[1]#grabs y value 
-    redCollision = math.sqrt((redX * redX)+ (redY * redY))#finds the radius
-    if redCollision < 35:#if radius is less than 35 pixels then change brush to red this goes the same for all brushes, colors, save, and eraser
-        g = 0
-        r = 200
-        b = 0
-
-
-
-    
-    orange = (35,90,0)#orange detection
-    orangeX = posX - orange[0]
-    orangeY = posY - orange[1]
-    orangeCollision = math.sqrt((orangeX * orangeX)+ (orangeY * orangeY))
-    if orangeCollision < 35:
-        g = 100
-        r = 255
-        b = 0
-
-
-
-
-    yellow = (35,150,0)
-    yellowX = posX - yellow[0]
-    yellowY = posY - yellow[1]
-    yellowCollision = math.sqrt((yellowX * yellowX)+ (yellowY * yellowY))
-    if yellowCollision < 35:
-        g = 255
-        r = 255
-        b = 0
-    
-    green = (35,220,0)
-    greenX = posX - green[0]
-    greenY = posY - green[1]
-    greenCollision = math.sqrt((greenX * greenX)+ (greenY * greenY))
-    if greenCollision < 35:
-        g = 200
-        r = 0
-        b = 0
-
-    blue = (35,250,0)
-    blueX = posX - blue[0]
-    blueY = posY - blue[1]
-    blueCollision = math.sqrt((blueX * blueX)+ (blueY * blueY))
-    if blueCollision < 35:
-        g = 0
-        r = 0
-        b = 200
-    
-    violet = (35,360,0)
-    violetX = posX - violet[0]
-    violetY = posY - violet[1]
-    violetCollision = math.sqrt((violetX * violetX)+ (violetY * violetY))
-    if violetCollision < 35:
-        g = 0
-        r = 200
-        b = 255
-   
-    
     cv2.circle(img,(posX,posY),brushSize,(b,g,r),-1)#this calls our brush &draws it on screen using the cv2.circlefunction
+    if(posX != 0 or posY != 0):
+        notes[instrument].extend([posX,posY])
+    print(notes)
     #cv2.imshow('image',img)
     k = cv2.waitKey(1) & 0xFF 
     if(eraseFlag == False):#this use to clear the whole screen but got replaces with a brush set to 0 , 0 , 0 
@@ -189,8 +163,7 @@ while(1):#while this is true run!
     mask_inv = cv2.bitwise_not(mask)
     mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
     mask_inv = cv2.cvtColor(mask_inv, cv2.COLOR_GRAY2BGR)
-    cv2.imshow('test', mask)
-    both = frame * (mask_inv / 255) + img * (mask / 255);
+    both = frame * (mask_inv / 255) + img * (mask / 255)
     both = cv2.flip(both, 1)#inverts the webcam screen
     cv2.imshow('image',both)#shows us our webcam with everything implemented, ui, hand detection and canvas
 
