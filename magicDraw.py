@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import math
+#this is a comment
 
 video = cv2.VideoCapture(0)
 video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -16,12 +17,6 @@ brushSize = 10 #default size 10 brush
 b = 0
 g = 0
 r = 200 #default to red brush
-instrument = 0
-#instruments, piano:0, 
-notes = [[],[]]
-#2d array of notes, first array is instrument, second is coordinates
-#One set up coordinates takes up two places, first is x, second y
-#ex the array [5,7,3,4] represents two points, the first at (5,7) and the second at (3,4)
 
 # mouse callback function
 def draw_circle(event,x,y,flags,param):#commands you can use with keyboard testing only
@@ -47,7 +42,15 @@ def draw_circle(event,x,y,flags,param):#commands you can use with keyboard testi
             
             
 img = np.zeros((height,width,3), np.uint8)
-#ui = cv2.imread("UI.png")# reads and sets user interface to ui
+ui = cv2.imread("UI.png")# reads and sets user interface to ui
+
+
+def collision(x_coor,y_coor, handX, handY):
+    collX = handX - x_coor
+    collY = handY - y_coor
+    comboCollision = math.sqrt((collX * collX)+ (collY * collY))
+    if comboCollision < 35:
+        return True
 
 while(1):#while this is true run!
    
@@ -97,56 +100,19 @@ while(1):#while this is true run!
             r = 200
             b = 0
           
-    eraser = (600,220, 0)#eraser detection 
-    collisionX = posX - eraser[0]
-    collisionY = posY - eraser[1]
-    eraserCollision = math.sqrt((collisionX * collisionX) + (collisionY * collisionY))
-    eraseFlag = True
-    if eraserCollision < 35:#you can change this if you like to make the radius wider but 35 works well
+
+
+    if(collision(315,50,posX,posY)):
+        g = 200
         r = 0
         b = 0
-        g = 0
-        
-    
-    save = (310,50,0)#save detection
-    colX = posX - save[0]
-    colY = posY - save[1]
-    saveCollision = math.sqrt((colX * colX)+ (colY * colY))
-    saveFlag = True
-    if saveCollision < 30:
-        saveFlag = False
-    
-    small = (600,65,0)#small brush detection
-    smallColX = posX - small[0]
-    smallColY = posY - small[1]
-    smallCollision = math.sqrt((smallColX * smallColX)+ (smallColY * smallColY))
-    if smallCollision < 35:
-        brushSize = 5
-    
-    norm = (600,100,0)#x, y coordiniates  normal brush detection
-    normColX = posX - norm[0]
-    normColY = posY - norm[1]
-    normCollision = math.sqrt((normColX * normColX)+ (normColY * normColY))
-    if normCollision < 35:
-        brushSize = 10
-    
-    big = (600,150,0)#big brush detection 
-    bigColX = posX - big[0]
-    bigColY = posY - big[1]
-    bigCollision = math.sqrt((bigColX * bigColX)+ (bigColY * bigColY))
-    if bigCollision < 35:
-        brushSize = 20
-    
     cv2.circle(img,(posX,posY),brushSize,(b,g,r),-1)#this calls our brush &draws it on screen using the cv2.circlefunction
-    if(posX != 0 or posY != 0):
-        notes[instrument].extend([posX,posY])
-    print(notes)
     #cv2.imshow('image',img)
     k = cv2.waitKey(1) & 0xFF 
-    if(eraseFlag == False):#this use to clear the whole screen but got replaces with a brush set to 0 , 0 , 0 
-        img = np.zeros((height,width,3), np.uint8) 
-    if(saveFlag == False): #checks if flag is false if so save frame when save icon is hovered over
-        cv2.imwrite('YourImage.jpg',both)
+    #if(eraseFlag == False):#this use to clear the whole screen but got replaces with a brush set to 0 , 0 , 0 
+        #img = np.zeros((height,width,3), np.uint8) 
+    #if(saveFlag == False): #checks if flag is false if so save frame when save icon is hovered over
+        #cv2.imwrite('YourImage.jpg',both)
     if k == ord('m'):
         mode = not mode
     if k == ord('s'): #manually saves using s key
@@ -158,13 +124,33 @@ while(1):#while this is true run!
     
     #frame = cv2.add(frame,ui)#combines frame with ui 
     #both = cv2.addWeighted(frame,img)#combines everything together
-    img2gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    ret, mask = cv2.threshold(img2gray, 10, 255, cv2.THRESH_BINARY)
+    #img2gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    ui2gray = cv2.cvtColor(ui,cv2.COLOR_BGR2GRAY)
+    
+    #ret, mask = cv2.threshold(img2gray, 10, 255, cv2.THRESH_BINARY)
+    retM, uiMask = cv2.threshold(ui2gray, 5, 255, cv2.THRESH_BINARY)
+    
+
+    ui_inv = cv2.bitwise_not(uiMask)
+    
+
+    
+    uiMask = cv2.cvtColor(uiMask, cv2.COLOR_GRAY2BGR)
+    ui_inv = cv2.cvtColor(ui_inv, cv2.COLOR_GRAY2BGR)
+    
+    img2 = img + ui * (uiMask / 255)
+    
+    img2gray = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
+    
+    ret, mask = cv2.threshold(img2gray, 5, 255, cv2.THRESH_BINARY)
+
     mask_inv = cv2.bitwise_not(mask)
+
     mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
     mask_inv = cv2.cvtColor(mask_inv, cv2.COLOR_GRAY2BGR)
-    both = frame * (mask_inv / 255) + img * (mask / 255)
+
+    both = frame * (mask_inv / 255) + img2 * (mask / 255) 
     both = cv2.flip(both, 1)#inverts the webcam screen
     cv2.imshow('image',both)#shows us our webcam with everything implemented, ui, hand detection and canvas
-
+    cv2.imshow('mask', img2)
 cv2.destroyAllWindows()#once while is false it exits the window
