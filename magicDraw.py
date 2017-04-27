@@ -70,7 +70,10 @@ while(1):#while this is true run!
         posX = x+(w/2)
         posY = y+(h/2)
 
+    print(instrument)
     #Color detection
+    if posX > width * .9:
+        instrument = 1
     if posX < width * .1:
         if posY < height * .9:#Purple
             g = 0
