@@ -80,10 +80,7 @@ while(1):#while this is true run!
         posX = x+(w/2)
         posY = y+(h/2)
 
-    print(instrument)
     #Color detection
-    if posX > width * .9:
-        instrument = 1
     if posX < width * .1:
         if posY < height * .9:#Purple
             g = 0
@@ -116,9 +113,10 @@ while(1):#while this is true run!
         g = 200
         r = 0
         b = 0
-    cv2.circle(img,(posX,posY),brushSize,(b,g,r),-1)#this calls our brush &draws it on screen using the cv2.circlefunction
-    if(posX != 0 or posY != 0):
-        notes[instrument].extend([posX,posY])
+    if(posY <= 375):
+        cv2.circle(img,(posX,posY),brushSize,(b,g,r),-1)#this calls our brush &draws it on screen using the cv2.circlefunction
+        if(posX != 0 or posY != 0):
+            notes[instrument].extend([posX,posY])
     print(notes)
     #cv2.imshow('image',img)
     k = cv2.waitKey(1) & 0xFF 
@@ -165,5 +163,5 @@ while(1):#while this is true run!
     both = frame * (mask_inv / 255) + img2 * (mask / 255) 
     both = cv2.flip(both, 1)#inverts the webcam screen
     cv2.imshow('image',both)#shows us our webcam with everything implemented, ui, hand detection and canvas
-    cv2.imshow('mask', img2)
+    #cv2.imshow('mask', img2)#Debug, shows mask
 cv2.destroyAllWindows()#once while is false it exits the window
