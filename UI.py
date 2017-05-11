@@ -22,12 +22,13 @@ def show_frame():
     imgtk = ImageTk.PhotoImage(image=img)
     lmain.imgtk = imgtk
     lmain.configure(image=imgtk)
+    lmain.grid(row=0,columnspan = 2, sticky =W)
     lmain.after(10, show_frame)
 
 
 
 
-window = tk.Toplevel()
+window = root
 window.title("Settings")
 #window.geometry('{}x{}'.format(300, 100))
 Label(window, text="Resolution").grid(row=0, columnspan=2, sticky=W)
