@@ -61,7 +61,7 @@ def collision(x_coor,y_coor, handX, handY):
         return True
 
 while(1):#while this is true run!
-   
+    saveFlag = True
     posX = 0 #initializes posX & posY containers to 0
     posY = 0
     ret, frame = video.read()#read video data sets it to frame and ret
@@ -84,10 +84,12 @@ while(1):#while this is true run!
     print posX,posY
     if(collision(1180,500,posX,posY)):
         print "play"
+        saveFlag = False
+        
     if(posY <= 375):
         cv2.circle(img,(posX,posY),brushSize,(b,g,r),-1)#this calls our brush &draws it on screen using the cv2.circlefunction
         if(posX != 0 or posY != 0):
-            notes[instrument].extend([posX,posY])
+            notes.extend([posX,posY])
     print(notes)
     #cv2.imshow('image',img)
     k = cv2.waitKey(1) & 0xFF 
@@ -97,6 +99,11 @@ while(1):#while this is true run!
         #cv2.imwrite('YourImage.jpg',both)
     if k == ord('m'):
         mode = not mode
+    if(saveFlag == False): #checks if flag is false if so save frame when save icon is hovered over
+        thefile = open('test.txt', 'w')
+        for item in notes:
+            thefile.write("%s\n" % item)
+
     if k == ord('s'): #manually saves using s key
         cv2.imwrite('test.jpg',both)
     if k == ord('c'):#clears whole screen using c key
