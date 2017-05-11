@@ -19,7 +19,7 @@ g = 0
 r = 200 #default to red brush
 instrument = 0
 #instruments, piano:0, 
-notes = [[],[]]
+notes = []
 #2d array of notes, first array is instrument, second is coordinates
 #One set up coordinates takes up two places, first is x, second y
 #ex the array [5,7,3,4] represents two points, the first at (5,7) and the second at (3,4)
@@ -56,7 +56,8 @@ def collision(x_coor,y_coor, handX, handY):
     collX = handX - x_coor
     collY = handY - y_coor
     comboCollision = math.sqrt((collX * collX)+ (collY * collY))
-    if comboCollision < 35:
+    print comboCollision
+    if comboCollision < 70:
         return True
 
 while(1):#while this is true run!
@@ -80,39 +81,9 @@ while(1):#while this is true run!
         posX = x+(w/2)
         posY = y+(h/2)
 
-    #Color detection
-    if posX < width * .1:
-        if posY < height * .9:#Purple
-            g = 0
-            r = 200
-            b = 255
-        if posY < height * .75:#Blue
-            g = 0
-            r = 0
-            b = 200
-        if posY < height * .6:#Green
-            g = 200
-            r = 0
-            b = 0
-        if posY < height * .45:#Yellow
-            g = 255
-            r = 255
-            b = 0
-        if posY < height * .3:#Orange
-            g = 100
-            r = 255
-            b = 0 
-        if posY < height * .15:#Red
-            g = 0
-            r = 200
-            b = 0
-          
-
-
-    if(collision(315,50,posX,posY)):
-        g = 200
-        r = 0
-        b = 0
+    print posX,posY
+    if(collision(1180,500,posX,posY)):
+        print "play"
     if(posY <= 375):
         cv2.circle(img,(posX,posY),brushSize,(b,g,r),-1)#this calls our brush &draws it on screen using the cv2.circlefunction
         if(posX != 0 or posY != 0):
