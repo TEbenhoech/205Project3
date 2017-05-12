@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 import math
+#import chords
+#import os
 #this is a comment
 
 video = cv2.VideoCapture(0)
@@ -103,6 +105,8 @@ while(1):#while this is true run!
         thefile = open('test.txt', 'w')
         for item in notes:
             thefile.write("%s\n" % item)
+        #thefile.close()
+        #chords.playSound()
 
     if k == ord('s'): #manually saves using s key
         cv2.imwrite('test.jpg',both)
