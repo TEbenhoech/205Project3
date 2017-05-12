@@ -192,13 +192,19 @@ def getNotes():
 	#return userNotes
 	return noteString
 
-
-def main():
+def playSound():
 	pygame.mixer.pre_init(sample_rate, -16, 1) # 44.1kHz, 16-bit signed, mono
 	pygame.init()
 	notes = getNotes()
 	#print notes 
 	play_notes(notes)
 
-if __name__ == '__main__':
-	main()
+# def main():
+# 	pygame.mixer.pre_init(sample_rate, -16, 1) # 44.1kHz, 16-bit signed, mono
+# 	pygame.init()
+# 	notes = getNotes()
+# 	#print notes 
+# 	play_notes(notes)
+
+# if __name__ == '__main__':
+# 	main()
